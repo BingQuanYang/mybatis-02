@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ybq.mybatis.mapper.IfMapper">
+    <!--<select id="selectUser" resultMap="com.ybq.mybatis.mapper.UserMapper.BaseResultMap">
+        &#45;&#45; 根据手机号或者用户名或者邮箱查询用户信息
+                select *
+                from user
+                where
+        <if test="user.username != null">
+            username = #{user.username}
+        </if>
+        <if test="user.status != null">
+            and status = #{user.status}
+        </if>
+    </select>-->
+    <!--<select id="selectUser" resultMap="com.ybq.mybatis.mapper.UserMapper.BaseResultMap">
+        select *
+        from user
+        <where>
+            <if test="user.username != null">
+                username = #{user.username}
+            </if>
+            <if test="user.status != null">
+                and status = #{user.status}
+            </if>
+        </where>
+    </select>-->
+
+    <!--set标签,只能去掉末尾的逗号-->
+    <!--<update id="update">
+        update user
+        <set>
+            <if test="user.username != null">
+                username = #{user.username}
+            </if>
+        </set>
+        where user_id = #{user.userId}
+    </update>-->
+
+
+    <!--
+    trim标签
+        prefix 来表示where set
+        prefixOverrides 去掉
+
+    -->
+    <select id="selectUser" resultMap="com.ybq.mybatis.mapper.UserMapper.BaseResultMap">
+        select *
+        from user
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test="user.username != null">
+                and username = #{user.username}
+            </if>
+            <if test="user.status != null">
+                and status = #{user.status}
+            </if>
+        </trim>
+    </select>
+    <update id="update">
+        update user
+        <trim prefix="set" prefixOverrides=",">
+            <if test="user.username != null">
+                ,username = #{user.username}
+            </if>
+            <if test="user.password != null">
+                ,password=#{user.password,jdbcType=VARCHAR}
+            </if>
+        </trim>
+        where user_id = #{user.userId}
+    </update>
+    <insert id="batchUsers">
+        insert into user(username, password)
+        values
+        <foreach collection="users" item="user" index="i" open="(" close=")" separator=",">
+            #{user.username},#{user.password}
+        </foreach>
+    </insert>
+</mapper>

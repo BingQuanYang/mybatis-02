@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ybq.mybatis.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.ybq.mybatis.entity.Order">
+        <id property="orderId" column="order_id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="status" column="status"/>
+        <result property="createDate" column="create_date"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+    <resultMap id="ListResultMap" type="com.ybq.mybatis.entity.Order" extends="BaseResultMap">
+        <!--声明一对一的关系-->
+        <association property="user" resultMap="com.ybq.mybatis.mapper.UserMapper.BaseResultMap">
+        </association>
+    </resultMap>
+    <resultMap id="CollectionResultMap" type="com.ybq.mybatis.entity.Order" extends="BaseResultMap">
+        <collection property="orderItems" resultMap="com.ybq.mybatis.mapper.OrderItemMapper.BaseResultMap">
+        </collection>
+    </resultMap>
+    <select id="selectOrderByOrderNo" resultMap="ListResultMap">
+        select *
+        from t_order o
+                     join user u on o.user_id = u.user_id
+        where order_no = #{orderNo}
+    </select>
+    <select id="selectOrderByUserId" resultMap="CollectionResultMap">
+        select *
+        from t_order o
+                     left join order_item oi on o.order_id = oi.order_id
+                     where o.user_id=#{userId}
+    </select>
+</mapper>

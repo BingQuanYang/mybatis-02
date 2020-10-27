@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ybq.mybatis.mapper.RolesMapper">
+    <resultMap id="BaseResultMap" type="com.ybq.mybatis.entity.Roles">
+        <id property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleDeclare" column="role_declare"/>
+        <result property="isDel" column="is_del"/>
+    </resultMap>
+    <resultMap id="CollectionResultMap" type="com.ybq.mybatis.entity.Roles" extends="BaseResultMap">
+    <collection property="privileges" resultMap="com.ybq.mybatis.mapper.PrivilegeMapper.BaseResultMap"/>
+</resultMap>
+    <select id="selectById" resultMap="BaseResultMap">
+        select * from roles
+    </select>
+    <select id="selectByUserId" resultMap="CollectionResultMap">
+        select *
+        from roles
+                     left join roles_privilege_relation rpr on roles.role_id = rpr.role_id
+                     left join privilege p on rpr.privilege_id = p.privilege_id
+        where user_id = #{userId}
+    </select>
+</mapper>
